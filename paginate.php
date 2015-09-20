@@ -17,7 +17,7 @@ $pages = ceil($get_total_rows[0]/$item_per_page);
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Ajax Pagination</title>
+<title>Results pagination</title>
 <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
 <script type="text/javascript" src="js/jquery.bootpag.min.js"></script>
 <script type="text/javascript">
@@ -38,6 +38,8 @@ $(document).ready(function() {
 <link href="css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+<h2> NOTE: These results are found in drug safety / pharmacovigilance research studies that aim to predict statistically plausible drug-drug interactions and their effects. These results are highly experimental and have not been validaded through experimentation or by experts</h2>
+<h2> Total number of possible interactions found: <?php echo floor($get_total_rows[0]/2); ?> </h2>
 <div id="results"></div>
 <div class="pagination"></div>
 </body>
