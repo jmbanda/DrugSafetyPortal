@@ -259,8 +259,15 @@
 					}
 					$results = query_pmid(implode(',',$ids), $compact);
 				}
+			$tr_results=$xml->Count;
+			if ($tr_results < 5) {
+				$recent=$tr_results;
+			} else {
+				$recent=5;
+			}
 			
-			echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$xml->Count." results, showing the most recent 5)</p>";
+			echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$tr_results." results, showing the most recent ".$recent.")</p>";			
+			//echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$xml->Count." results, showing the most recent 5)</p>";
 			echo '<table border="0" cellspacing="0" cellpadding="0">';
 			echo "   <tr>";
 			echo "      <th>PMID</th>";
@@ -324,8 +331,14 @@
 					}
 					$results = query_pmid(implode(',',$ids), $compact);
 				}
+			$tr_results=$xml->Count;
+			if ($tr_results < 5) {
+				$recent=$tr_results;
+			} else {
+				$recent=5;
+			}
 			
-			echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$xml->Count." results, showing the most recent 5)</p>";
+			echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$tr_results." results, showing the most recent ".$recent.")</p>";
 			echo '<table border="0" cellspacing="0" cellpadding="0">';
 			echo "   <tr>";
 			echo "      <th>PMID</th>";
