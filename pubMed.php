@@ -1,3 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+	<title>PHP PubMed Retrieval</title>
+<style type="text/css" media="screen">
+		body{font-family:"Helvetica Neue",Helvetica,sans-serif;font-size:14px;line-height:19px;}
+		h1 a{color:#A00;}h1 a:hover{text-decoration:none;}
+		pre,code{font-family:Monaco,monospace;font-size:12px;}pre{padding:20px;background:#EEE;}
+		a{color:#00a;text-decoration:none;}a:hover{color:#000;text-decoration:underline;}
+		table{width:100%;}
+		th{text-align:left;border-bottom:1px solid #CCC;padding:5px;}
+		td{vertical-align:top;padding:5px;}
+		#wrap{width:960px;margin:0 auto;}
+		input[type=text]{width:300px;font-size:inherit;font-family:inherit;border:1px solid #BBB;padding:5px;}
+	</style>
+</head>
+<body>
 <?php
 	$term = stripslashes(urldecode($_POST['term']));
 	$proxy_name = '';
@@ -5,8 +23,9 @@
 	$proxy_username = '';
 	$proxy_password = '';
 	$curl_site_url = '';
+	$ADR_query='"adverse effects"[Subheading] AND "chemically induced"[Subheading] AND "Chemicals and Drugs Category"[Mesh]';
     //$query_string=urlencode('"Chemicals and Drugs Category/adverse effects"[Mesh] AND "chemically induced"[Subheading] AND "Drug interactions"[Mesh]');
-	$query_string=$term;
+	$query_string=$ADR_query. " AND ".$term;
 $result = file_get_contents('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term='.$query_string.'&retmode=xml');
 $xml = simplexml_load_string($result);
 //echo $xml->Count; // = 5986
@@ -181,3 +200,5 @@ $xml = simplexml_load_string($result);
 		<?php endforeach; ?>
 	</table>
 <?php endif; ?>
+</body>
+</html>
