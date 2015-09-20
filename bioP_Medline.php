@@ -231,7 +231,7 @@
 			echo '<h3> No interactions found in research datasets </h3>';
 		} else {
 		$row_res = mysqli_fetch_row($fetch_stuff);
-			echo '<h3> Interactions found in research datasets: '.floor($row_res[0]).', <a href="ddi.php?drugs='.serialize($mesh_drug_codes).'">check here</a></h3>';
+			echo '<h3> Interactions found in research datasets: '.floor($row_res[0]).', <a href="paginate.php?drug='.$mesh_item.'">check here</a></h3>';
 			$ddi=$ddi+1;
 		}
 		
@@ -239,9 +239,6 @@
 		
 		echo '<div id="medline_results"> ';
 		//Lets look for the medline results for each drug
-	
-
-	
 		$term = $mesh_drug_names[$cnt];
 		$ADR_query='"adverse effects"[Subheading] AND "chemically induced"[Subheading] AND "Chemicals and Drugs Category"[Mesh]';
 		//$query_string=urlencode('"Chemicals and Drugs Category/adverse effects"[Mesh] AND "chemically induced"[Subheading] AND "Drug interactions"[Mesh]');
@@ -288,6 +285,68 @@
 		echo '<br> <br>';
 	}
 	echo "<br>";
+	
+	// Let's look at the interactions between multiple drugs
+	echo "<h3> Adverse event literature featuring all drugs (not necesarily a complementary interaction): ";
+	$drugs_total=0;
+	$medline_query=$ADR_query.' AND "';
+	foreach ($mesh_drug_codes as $mesh_item) {
+		if ($drugs_total >0 ){
+			echo ", ";
+		}
+		if ($drugs_total>=1) {
+			$medline_query=$medline_query. ' AND "';
+		}
+		echo "<a href='http://cu.mesh.bio2rdf.org/describe/?url=http%3A%2F%2Fbio2rdf.org%2Fmesh%3A".$mesh_item."'>".$mesh_drug_names[$drugs_total]."</a>";
+		$medline_query=$medline_query.$mesh_drug_names[$drugs_total].'"[Mesh]';
+		$drugs_total=$drugs_total+1;
+	}
+	echo "</h3>";
+		echo '<div id="medline_results"> ';
+		//Lets look for the medline results for each drug
+		//$term = $mesh_drug_names[$cnt];
+		//$ADR_query='"adverse effects"[Subheading] AND "chemically induced"[Subheading] AND "Chemicals and Drugs Category"[Mesh]';
+		//$query_string=urlencode('"Chemicals and Drugs Category/adverse effects"[Mesh] AND "chemically induced"[Subheading] AND "Drug interactions"[Mesh]');
+		$query_string=$medline_query;
+		//echo '<p>'.$query_string.'</p>';
+		$result = file_get_contents('http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmax=5&term='.urlencode($query_string).'&retmode=xml');
+		$xml = simplexml_load_string($result);
+		//
+		$total_hits=$xml->Count;
+		if ($total_hits == 0) {
+			echo '<p> No results found for '.$medline_query.'<p>';
+		} else {		
+			$results = array();
+				if (isset($xml->IdList->Id) && !empty($xml->IdList->Id)) {
+					$ids = array();
+					foreach ($xml->IdList->children() as $id) {
+						$ids[] = (string)$id;
+					}
+					$results = query_pmid(implode(',',$ids), $compact);
+				}
+			
+			echo "<p>Search results for <strong>".urldecode($query_string)."</strong> (".$xml->Count." results, showing the most recent 5)</p>";
+			echo '<table border="0" cellspacing="0" cellpadding="0">';
+			echo "   <tr>";
+			echo "      <th>PMID</th>";
+			echo "      <th>Title</th>";
+			echo "        <th>Authors</th>";
+			echo "        <th>Journal</th>";
+			echo "        <th>Year</th>";
+			echo "    </tr>";
+			foreach ($results as $resultMD) {
+				echo "    <tr>";
+				echo "        <td>".$resultMD['pmid']."</td>";
+				echo '    <td><a href="http://www.ncbi.nlm.nih.gov/pubmed/'.$resultMD['pmid'].'" target="_blank">'.$resultMD['title']."</a></td>";
+				echo '        <td>'.implode(", ",$resultMD['authors']).'</td>';
+				echo '		  <td>'.$resultMD['journalabbrev'].'</td>';
+				echo '        <td>'.$resultMD['year'].'</td>';
+				echo '    </tr>';
+			}
+			echo '</table>';
+	}
+	echo '</div>';	
+	
 	echo "</body>";
 	echo "</html>";
 	
