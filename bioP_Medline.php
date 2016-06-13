@@ -1,9 +1,7 @@
 <?php
+
+include 'dbstuff.php';
 		//DB STUFF
-		$servername = "localhost";
-		$username = "root";
-		$password = "";
-		$dbname = "drugsafetyportal";
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
 		// Check connection
@@ -239,7 +237,7 @@
 	//var_dump($mesh_drug_names);
 	$cnt=0;
 	foreach ($mesh_drug_codes as $mesh_item) {
-		echo "Drug name: <a href='http://cu.mesh.bio2rdf.org/describe/?url=http%3A%2F%2Fbio2rdf.org%2Fmesh%3A".$mesh_item."' target='_blank'>".$mesh_drug_names[$cnt]."</a> <br>";
+		echo "Drug name: <a href='http://mesh.bio2rdf.org/describe/?url=http%3A%2F%2Fbio2rdf.org%2Fmesh%3A".$mesh_item."' target='_blank'>".$mesh_drug_names[$cnt]."</a> <br>";
 		//Interactions found in the DB
 		$fetch_stuff = mysqli_query($conn, "SELECT count(ddi_id)/2 as countTT FROM ddi WHERE (drug1mesh = '".$mesh_item."' OR drug2mesh = '".$mesh_item."') AND (EHR+FAERS+INDI+MEDLINE+VILAR+TWOSIDES)>0"); 
 		//$row_res= mysqli_fetch_row($fetch_stuff);		
@@ -322,7 +320,7 @@
 			if ($drugs_total>=1) {
 				$medline_query=$medline_query. ' AND "';
 			}
-			echo "<a href='http://cu.mesh.bio2rdf.org/describe/?url=http%3A%2F%2Fbio2rdf.org%2Fmesh%3A".$mesh_item."'>".$mesh_drug_names[$drugs_total]."</a>";
+			echo "<a href='http://mesh.bio2rdf.org/describe/?url=http%3A%2F%2Fbio2rdf.org%2Fmesh%3A".$mesh_item."'>".$mesh_drug_names[$drugs_total]."</a>";
 			$medline_query=$medline_query.$mesh_drug_names[$drugs_total].'"[Mesh]';
 			$drugs_total=$drugs_total+1;
 		}
