@@ -1,15 +1,17 @@
 <?php
 		//DB STUFF
 		$servername = "localhost";
-		$username = "donation_edits";
-		$password = "donation";
-		$dbname = "TCD_DDI";
+		$username = "root";
+		$password = "";
+		$dbname = "drugsafetyportal";
 		// Create connection
 		$conn = new mysqli($servername, $username, $password, $dbname);
 		// Check connection
 		if ($conn->connect_error) {
 			die("Connection failed: " . $conn->connect_error);
 		}		
+		// PDO migration
+		$db_pdo = new PDO('mysql:host=localhost;dbname=drugsafetyportal;charset=utf8mb4', 'root', '');
 		//DB STUFF - done		
 
 		//MEDLINE Querying stuff
@@ -150,6 +152,21 @@
 		}	
 	//END OF MEDLINE STUFF
 
+	// Query Recording
+	
+	if ($_SERVER['HTTP_CLIENT_IP']!="") {
+		$ip = $_SERVER['HTTP_CLIENT_IP'];
+	} elseif ($_SERVER['HTTP_X_FORWARDED_FOR']!="") {
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	}
+	else  {
+		$ip = $_SERVER['REMOTE_ADDR'];
+	}
+	
+	$stmt = $db_pdo->prepare("INSERT INTO query_hist (user,query) VALUES(:usr,:qry)");
+	$stmt->execute(array(':usr' => $ip, ':qry' => urldecode($_POST['bioMedline'])));
+	
+	
 	$term = stripslashes(urldecode($_POST['bioMedline']));	
 	$ch = curl_init();
 	$request_headers = array();
@@ -227,7 +244,7 @@
 		$fetch_stuff = mysqli_query($conn, "SELECT count(ddi_id)/2 as countTT FROM ddi WHERE (drug1mesh = '".$mesh_item."' OR drug2mesh = '".$mesh_item."') AND (EHR+FAERS+INDI+MEDLINE+VILAR+TWOSIDES)>0"); 
 		//$row_res= mysqli_fetch_row($fetch_stuff);		
 		
-		if($results->num_rows === 0) {
+		if($results->num_rows == 0) {
 			echo '<h3> No interactions found in research datasets </h3>';
 		} else {
 		$row_res = mysqli_fetch_row($fetch_stuff);

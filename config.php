@@ -1,8 +1,8 @@
 <?php
 $db_host = "localhost"; 
-$db_username     = "donation_edits"; 
-$db_password = "donation"; 
-$db_name = "TCD_DDI"; 
+$db_username     = "ds_portal"; 
+$db_password = "ds_portal"; 
+$db_name = "drugsafetyportal"; 
 
 $item_per_page 		= 10; //item to display per page
 
